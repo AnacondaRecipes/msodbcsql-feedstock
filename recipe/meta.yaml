@@ -17,12 +17,11 @@ source:
   fn: msodbcsql.msi  # [win]
 
 build:
-  number: 6
+  number: 0
   ignore_run_exports:
     - openssl  # [osx]
     - unixodbc  # [osx]
   missing_dso_whitelist:
-    # binary repackaging
     - /opt/homebrew/lib/*  # [osx]
     - /usr/local/lib/libodbcinst*  # [osx]
     - /lib64/lib*  # [linux]
@@ -32,22 +31,17 @@ build:
     - $RPATH/api-ms-win-core-winrt-error-l1-1-0.dll  # [win]
     - $RPATH/api-ms-win-core-winrt-l1-1-0.dll  # [win]
 
-
 requirements:
-
   host:
-    - unixodbc  # [osx]
+    - unixodbc >=2.3.1  # [osx]
     - openssl >=3  # [osx]
   run:
-    - unixodbc  # [osx]
-    - libtool  # [osx]
-    - ca-certificates  # [osx]
-    - openssl >=3  # [osx]
-    ##########
+    - libtool  # [linux or osx]
+    - ca-certificates
     # libkrb5-3 + on debian libgssapi-krb5-2
     - krb5  # [linux]
-    - openssl >=3  # [linux]
-    - unixodbc >=2.3.1  # [linux]
+    - openssl >=3  # [linux or osx]
+    - unixodbc >=2.3.1  # [linux or osx]
 
 #test:
 #  commands:

@@ -13,6 +13,10 @@ if errorlevel 1 exit 1
 :: Create conda environment directory structure
 mkdir "%PREFIX%\Library\include\msodbcsql18"
 if errorlevel 1 exit 1
+mkdir "%PREFIX%\Library\lib\x86"
+if errorlevel 1 exit 1
+mkdir "%PREFIX%\Library\lib\x64"
+if errorlevel 1 exit 1
 mkdir "%PREFIX%\Library\share\doc\msodbcsql18"
 if errorlevel 1 exit 1
 
@@ -30,9 +34,11 @@ copy "%SRC_DIR%\msodbcsql_extract\Windows\System32\1033\msodbcsqlr18.rll" "%PREF
 if errorlevel 1 exit 1
 
 :: Copy SDK files
-copy "%SRC_DIR%\msodbcsql_extract\Program Files\Microsoft SQL Server\Client SDK\ODBC\180\SDK\Include\msodbcsql.h" "%PREFIX%\Library\include\msodbcsql18\"
+copy "%SRC_DIR%\msodbcsql_extract\Program Files\Microsoft SQL Server\Client SDK\ODBC\180\SDK\Include\*" "%PREFIX%\Library\include\msodbcsql18\"
 if errorlevel 1 exit 1
-copy "%SRC_DIR%\msodbcsql_extract\Program Files\Microsoft SQL Server\Client SDK\ODBC\180\SDK\Lib\x64\msodbcsql18.lib" "%PREFIX%\Library\lib\"
+copy "%SRC_DIR%\msodbcsql_extract\Program Files\Microsoft SQL Server\Client SDK\ODBC\180\SDK\Lib\x64\*" "%PREFIX%\Library\lib\x64"
+if errorlevel 1 exit 1
+copy "%SRC_DIR%\msodbcsql_extract\Program Files\Microsoft SQL Server\Client SDK\ODBC\180\SDK\Lib\x86\*" "%PREFIX%\Library\lib\x86"
 if errorlevel 1 exit 1
 
 :: Copy documentation
