@@ -1,0 +1,52 @@
+{% set name = "msodbcsql18" %}
+{% set version = "18.4.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  url: https://packages.microsoft.com/debian/12/prod/pool/main/m/msodbcsql18/msodbcsql18_18.4.1.1-1_arm64.deb  # [linux]
+  sha256: b1a394d00e0629c862257b9b09507ca712cff7cc4d20f486d4e108bfec164255  # [linux]
+  url: https://go.microsoft.com/fwlink/?linkid=2280794  # [win]
+  sha256: b0fe5feb86975837c3297bf09e843c30241512aac4d10a4d40377c54039016bb  # [win]
+  fn: msodbcsql.msi  # [win]
+
+build:
+  number: 5
+  ignore_run_exports:
+    - openssl  # [osx]
+  missing_dso_whitelist:
+    # binary repackaging
+    - /opt/homebrew/lib/*  # [osx]
+    - /lib64/lib*  # [linux]
+    - $RPATH/libodbcinst.so.2  # [linux]
+    - $RPATH/ld-linux-aarch64.so.1  # [linux]
+    - $RPATH/api-ms-win-core-winrt-string-l1-1-0.dll  # [win]
+    - $RPATH/api-ms-win-core-winrt-error-l1-1-0.dll  # [win]
+    - $RPATH/api-ms-win-core-winrt-l1-1-0.dll  # [win]
+
+
+requirements:
+  build:
+    - git  # [osx]
+  run:
+    - unixodbc  # [osx]
+    - libtool  # [osx]
+    - ca-certificates  # [osx]
+    - openssl >=3  # [osx]
+    ##########
+    # libkrb5-3 + on debian libgssapi-krb5-2
+    - krb5  # [linux]
+    - openssl >=3  # [linux]
+    - unixodbc >=2.3.1  # [linux]
+
+#test:
+#  commands:
+#    - odbcinst -q -d | grep "ODBC Driver 18 for SQL Server"  # [linux]
+#    - Get-OdbcDriver | Where-Object { $_.Name -eq "ODBC Driver 18 for SQL Server" }  # [win]
+
+about:
+  home: https://docs.microsoft.com/en-us/sql/connect/odbc/
+  license: PROPRIETARY
+  summary: "Microsoft ODBC Driver 18 for SQL Server"
