@@ -6,6 +6,10 @@ package:
   version: {{ version }}
 
 source:
+  - url: https://download.microsoft.com/download/f/0/e/f0e1f86e-1647-480f-b649-27741eea9642/msodbcsql18-18.4.1.1-amd64.tar.gz  # [osx and x86_64]
+    sha256: 5af54cdb74827e6ffe78be8c35909febfce9f0e29773a492d054570327a74345  # [osx and x86_64]
+  - url: https://download.microsoft.com/download/f/0/e/f0e1f86e-1647-480f-b649-27741eea9642/msodbcsql18-18.4.1.1-arm64.tar.gz  # [osx and arm64]
+    sha256: ca5ae21c3a3c749ca1cdf44b445a09a2e6ef119c3dd49b4c0ad435ddebe0c9ab  # [osx and arm64]
   url: https://packages.microsoft.com/debian/12/prod/pool/main/m/msodbcsql18/msodbcsql18_18.4.1.1-1_arm64.deb  # [linux]
   sha256: b1a394d00e0629c862257b9b09507ca712cff7cc4d20f486d4e108bfec164255  # [linux]
   url: https://go.microsoft.com/fwlink/?linkid=2280794  # [win]
@@ -13,12 +17,14 @@ source:
   fn: msodbcsql.msi  # [win]
 
 build:
-  number: 5
+  number: 6
   ignore_run_exports:
     - openssl  # [osx]
+    - unixodbc  # [osx]
   missing_dso_whitelist:
     # binary repackaging
     - /opt/homebrew/lib/*  # [osx]
+    - /usr/local/lib/libodbcinst*  # [osx]
     - /lib64/lib*  # [linux]
     - $RPATH/libodbcinst.so.2  # [linux]
     - $RPATH/ld-linux-aarch64.so.1  # [linux]
@@ -28,8 +34,10 @@ build:
 
 
 requirements:
-  build:
-    - git  # [osx]
+
+  host:
+    - unixodbc  # [osx]
+    - openssl >=3  # [osx]
   run:
     - unixodbc  # [osx]
     - libtool  # [osx]
@@ -43,10 +51,17 @@ requirements:
 
 #test:
 #  commands:
-#    - odbcinst -q -d | grep "ODBC Driver 18 for SQL Server"  # [linux]
-#    - Get-OdbcDriver | Where-Object { $_.Name -eq "ODBC Driver 18 for SQL Server" }  # [win]
+#    - test -f $PREFIX/lib/libmsodbcsql.18.dylib  # [osx]
+#    - odbcinst -q -d #| grep "ODBC Driver 18 for SQL Server"  # [osx]
 
 about:
-  home: https://docs.microsoft.com/en-us/sql/connect/odbc/
-  license: PROPRIETARY
-  summary: "Microsoft ODBC Driver 18 for SQL Server"
+  home: https://docs.microsoft.com/en-us/sql/connect/odbc/microsoft-odbc-driver-for-sql-server
+  license: Microsoft Software License
+  license_family: PROPRIETARY
+  license_file: LICENSE.txt
+  summary: Microsoft ODBC Driver 18 for SQL Server
+  description: |
+    Microsoft ODBC Driver for SQL Server provides native connectivity from macOS to
+    Microsoft SQL Server and Microsoft Azure SQL Database.
+  doc_url: https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
+  dev_url: https://docs.microsoft.com/en-us/sql/connect/odbc/microsoft-odbc-driver-for-sql-server
