@@ -2,6 +2,15 @@
 
 set -ex
 
+# Check for EULA acceptance
+if [[ "$ACCEPT_EULA" != "Y" && "$ACCEPT_EULA" != "y" ]]; then
+    echo "Error: You must accept the EULA to install this package."
+    echo "The license terms can be viewed at https://aka.ms/odbc18eula"
+    echo "To accept the EULA, set the ACCEPT_EULA environment variable:"
+    echo "    ACCEPT_EULA=Y conda build <recipe-dir>"
+    exit 1
+fi
+
 if [[ ${target_platform} == osx-* ]]; then
     # The tarball extracts its contents to the current directory
     # Install the main library file

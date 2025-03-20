@@ -18,40 +18,46 @@ source:
 
 build:
   number: 0
+  script_env:
+    - ACCEPT_EULA=Y
   ignore_run_exports:
-    - openssl  # [osx]
+    - openssl  # [osx or linux]
     - unixodbc  # [osx]
+    - libgcc-ng  # [linux]
   missing_dso_whitelist:
     - /opt/homebrew/lib/*  # [osx]
     - /usr/local/lib/libodbcinst*  # [osx]
     - /lib64/lib*  # [linux]
     - $RPATH/libodbcinst.so.2  # [linux]
     - $RPATH/ld-linux-aarch64.so.1  # [linux]
+    - /lib64/ld-linux-aarch64.so.1  # [linux]
+    - lib/libgcc_s.so.1
     - $RPATH/api-ms-win-core-winrt-string-l1-1-0.dll  # [win]
     - $RPATH/api-ms-win-core-winrt-error-l1-1-0.dll  # [win]
     - $RPATH/api-ms-win-core-winrt-l1-1-0.dll  # [win]
 
 requirements:
   host:
-    - unixodbc >=2.3.1  # [osx]
-    - openssl >=3  # [osx]
+    - unixodbc >=2.3.1  # [linux or osx]
+    - openssl >=3  # [linux or osx]
   run:
-    - libtool  # [linux or osx]
     - ca-certificates
     # libkrb5-3 + on debian libgssapi-krb5-2
     - krb5  # [linux]
     - openssl >=3  # [linux or osx]
     - unixodbc >=2.3.1  # [linux or osx]
 
-#test:
-#  commands:
-#    - test -f $PREFIX/lib/libmsodbcsql.18.dylib  # [osx]
-#    - odbcinst -q -d #| grep "ODBC Driver 18 for SQL Server"  # [osx]
+test:
+  commands:
+    - test -f $PREFIX/lib/libmsodbcsql.18.dylib  # [osx]
+    - test -f $PREFIX/lib/libmsodbcsql-18.4.so.1.1  # [linux]
+    - IF NOT EXIST %PREFIX%\Library\lib\x64\msodbcsql18.lib EXIT /B 1  # [win]
+#    - odbcinst -q -d | grep "ODBC Driver 18 for SQL Server"  # [osx]
 
 about:
   home: https://docs.microsoft.com/en-us/sql/connect/odbc/microsoft-odbc-driver-for-sql-server
-  license: Microsoft Software License
-  license_family: PROPRIETARY
+  license: Microsoft Software License Terms
+  license_family: Proprietary
   license_file: LICENSE.txt
   summary: Microsoft ODBC Driver 18 for SQL Server
   description: |
@@ -59,3 +65,11 @@ about:
     Microsoft SQL Server and Microsoft Azure SQL Database.
   doc_url: https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
   dev_url: https://docs.microsoft.com/en-us/sql/connect/odbc/microsoft-odbc-driver-for-sql-server
+
+extra:
+  skip-lints:
+    - incorrect_license
+    - host_section_needs_exact_pinnings
+
+recipe-maintainers:
+  - aosipov

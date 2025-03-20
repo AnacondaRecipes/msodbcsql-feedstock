@@ -1,6 +1,15 @@
 @echo off
 setlocal enabledelayedexpansion
 
+:: Check for EULA acceptance
+if /I not "%ACCEPT_EULA%"=="Y" if /I not "%ACCEPT_EULA%"=="YES" (
+    echo Error: You must accept the EULA to install this package.
+    echo The license terms can be viewed at https://aka.ms/odbc18eula
+    echo To accept the EULA, set the ACCEPT_EULA environment variable:
+    echo     set ACCEPT_EULA=Y
+    exit 1
+)
+
 :: Create a temporary directory for extracted files
 mkdir "%SRC_DIR%\msodbcsql_extract" 2>nul
 if errorlevel 1 exit 1
