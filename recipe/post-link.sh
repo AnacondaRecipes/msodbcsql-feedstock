@@ -23,7 +23,6 @@ if [ -w /etc ]; then
         ln -sf "${PREFIX}/etc/odbc.ini" /etc/odbc.ini
     fi
 fi
-echo 6666666
 
 # Print installation message
 echo "Microsoft ODBC Driver 18 for SQL Server has been installed and registered with unixODBC." >> $PREFIX/.messages.txt
