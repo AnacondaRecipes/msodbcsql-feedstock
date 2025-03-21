@@ -62,9 +62,23 @@ echo Description=Microsoft ODBC Driver 18 for SQL Server
 echo Driver=%PREFIX%\Library\bin\msodbcsql18.dll
 echo Threading=1
 echo UsageCount=1
-) > "%PREFIX%\odbcinst.ini"
+) > "%PREFIX%\etc\odbcinst.ini.template"
+if errorlevel 1 exit 1
+
+:: Create directories for activate/deactivate scripts
+mkdir "%PREFIX%\etc\conda\activate.d" 2>nul
+mkdir "%PREFIX%\etc\conda\deactivate.d" 2>nul
+
+:: Copy activation/deactivation scripts
+copy "%RECIPE_DIR%\activate.bat" "%PREFIX%\etc\conda\activate.d\msodbcsql18.bat"
+if errorlevel 1 exit 1
+copy "%RECIPE_DIR%\deactivate.bat" "%PREFIX%\etc\conda\deactivate.d\msodbcsql18.bat"
+if errorlevel 1 exit 1
+
+:: Copy test script
+copy "%RECIPE_DIR%\test_msodbcsql18_windows.py" "%PREFIX%\"
 if errorlevel 1 exit 1
 
 :: Clean up
-rmdir /s /q "%TEMP%\msodbcsql_extract"
+rmdir /s /q "%SRC_DIR%\msodbcsql_extract"
 if errorlevel 1 exit 1

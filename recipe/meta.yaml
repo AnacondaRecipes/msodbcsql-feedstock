@@ -17,7 +17,7 @@ source:
   fn: msodbcsql.msi  # [win]
 
 build:
-  number: 0
+  number: 11
   script_env:
     - ACCEPT_EULA=Y
   ignore_run_exports:
@@ -31,7 +31,7 @@ build:
     - $RPATH/libodbcinst.so.2  # [linux]
     - $RPATH/ld-linux-aarch64.so.1  # [linux]
     - /lib64/ld-linux-aarch64.so.1  # [linux]
-    - lib/libgcc_s.so.1
+    - lib/libgcc_s.so.1  # [linux]
     - $RPATH/api-ms-win-core-winrt-string-l1-1-0.dll  # [win]
     - $RPATH/api-ms-win-core-winrt-error-l1-1-0.dll  # [win]
     - $RPATH/api-ms-win-core-winrt-l1-1-0.dll  # [win]
@@ -48,11 +48,31 @@ requirements:
     - unixodbc >=2.3.1  # [linux or osx]
 
 test:
+  files:
+    - test_msodbcsql18_unix.py  # [linux or osx]
+    - test_msodbcsql18_windows.py  # [linux or win]
+  requires:
+    - python
+    - unixodbc  # [osx or linux]
   commands:
+    # Check for file existence
     - test -f $PREFIX/lib/libmsodbcsql.18.dylib  # [osx]
     - test -f $PREFIX/lib/libmsodbcsql-18.4.so.1.1  # [linux]
-    - IF NOT EXIST %PREFIX%\Library\lib\x64\msodbcsql18.lib EXIT /B 1  # [win]
-#    - odbcinst -q -d | grep "ODBC Driver 18 for SQL Server"  # [osx]
+    - IF NOT EXIST %PREFIX%\Library\bin\msodbcsql18.dll EXIT /B 1  # [win]
+    
+    # Check for activation environment scripts
+    - test -f $PREFIX/etc/conda/activate.d/msodbcsql18.sh  # [osx or linux]
+    - test -f $PREFIX/etc/conda/deactivate.d/msodbcsql18.sh  # [osx or linux]
+    - IF NOT EXIST %PREFIX%\etc\conda\activate.d\msodbcsql18.bat EXIT /B 1  # [win]
+    - IF NOT EXIST %PREFIX%\etc\conda\deactivate.d\msodbcsql18.bat EXIT /B 1  # [win]
+    
+    # Create etc directory for testing if it doesn't exist
+    - mkdir -p $PREFIX/etc  # [osx or linux]
+    - IF NOT EXIST %PREFIX%\etc mkdir %PREFIX%\etc  # [win]
+    
+    # Run Python tests with output
+    - python test_msodbcsql18_unix.py  # [linux or osx]
+    - python test_msodbcsql18_windows.py  # [win]
 
 about:
   home: https://docs.microsoft.com/en-us/sql/connect/odbc/microsoft-odbc-driver-for-sql-server
@@ -61,9 +81,9 @@ about:
   license_file: LICENSE.txt
   summary: Microsoft ODBC Driver 18 for SQL Server
   description: |
-    Microsoft ODBC Driver for SQL Server provides native connectivity from macOS to
+    Microsoft ODBC Driver for SQL Server provides native connectivity from macOS, Linux and Windows to
     Microsoft SQL Server and Microsoft Azure SQL Database.
-  doc_url: https://docs.microsoft.com/en-us/sql/connect/odbc/linux-mac/installing-the-microsoft-odbc-driver-for-sql-server
+  doc_url: https://docs.microsoft.com/en-us/sql/connect/odbc/microsoft-odbc-driver-for-sql-server
   dev_url: https://docs.microsoft.com/en-us/sql/connect/odbc/microsoft-odbc-driver-for-sql-server
 
 extra:

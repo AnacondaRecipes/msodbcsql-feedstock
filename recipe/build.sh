@@ -12,7 +12,7 @@ if [[ "$ACCEPT_EULA" != "Y" && "$ACCEPT_EULA" != "y" ]]; then
 fi
 
 if [[ ${target_platform} == osx-* ]]; then
-    # The tarball extracts its contents to the current directory
+    # The tarball extracts contents to the current directory
     # Install the main library file
     mkdir -p $PREFIX/lib
     cp -p lib/libmsodbcsql.18.dylib $PREFIX/lib/
@@ -26,43 +26,75 @@ if [[ ${target_platform} == osx-* ]]; then
     mkdir -p $PREFIX/share/doc/msodbcsql18
     cp -p share/doc/msodbcsql18/LICENSE.txt $PREFIX/share/doc/msodbcsql18/
     cp -p share/doc/msodbcsql18/RELEASE_NOTES $PREFIX/share/doc/msodbcsql18/
-    # Set permissions
+    # Set access permissions
     chmod 0444 $PREFIX/lib/libmsodbcsql.18.dylib
     chmod 0444 $PREFIX/share/msodbcsql18/resources/en_US/msodbcsqlr18.rll
     chmod 0644 $PREFIX/include/msodbcsql18/msodbcsql.h
     chmod 0644 $PREFIX/share/doc/msodbcsql18/LICENSE.txt
     chmod 0644 $PREFIX/share/doc/msodbcsql18/RELEASE_NOTES
-    # Copy odbcinst.ini to prefix for use by post-link.sh
-    cp odbcinst.ini $PREFIX
-fi
-
-if [[ ${target_platform} == linux-* ]]; then
-    mkdir -p $SRC_DIR/data
-    #ls -la $SRC_DIR
-    tar -xf $SRC_DIR/data.tar.xz -C $SRC_DIR/data
-    #ls -la $SRC_DIR/msodbcsql18
-    #cp -r $SRC_DIR/msodbcsql18/* $PREFIX
-    mkdir -p $PREFIX/lib
-    cp -P $SRC_DIR/data/opt/microsoft/msodbcsql18/lib64/libmsodbcsql-*.so* $PREFIX/lib/
-    # Include files
-    mkdir -p $PREFIX/include/msodbcsql18
-    cp -r $SRC_DIR/data/opt/microsoft/msodbcsql18/include/* $PREFIX/include/msodbcsql18/
-    # Documentation
-    mkdir -p $PREFIX/share/doc/msodbcsql18
-    cp -r $SRC_DIR/data/usr/share/doc/msodbcsql18/* $PREFIX/share/doc/msodbcsql18/
-    # Resources
-    mkdir -p $PREFIX/share/msodbcsql18/resources/en_US
-    cp -r $SRC_DIR/data/opt/microsoft/msodbcsql18/share/resources/en_US/* $PREFIX/share/msodbcsql18/resources/en_US/
-    # Extract the odbcinst.ini template from Debian package
-    mkdir -p $PREFIX/share/msodbcsql18/resources/en_US
     
-    # Set permissions
-    chmod 0644 $PREFIX/include/msodbcsql18/*
-    chmod 0644 $PREFIX/share/doc/msodbcsql18/*
-    chmod 0755 $PREFIX/lib/libmsodbcsql-*.so*
-    chmod 0644 $PREFIX/share/msodbcsql18/resources/en_US/*
-    # Copy odbcinst.ini to prefix for use by post-link.sh
-    cp $SRC_DIR/data/opt/microsoft/msodbcsql18/etc/odbcinst.ini $PREFIX/
+    # Create directory for configuration
+    mkdir -p $PREFIX/etc
+    
+    # Create odbcinst.ini template for use during activation
+    cat > $PREFIX/etc/odbcinst.ini.template << EOF
+[ODBC Driver 18 for SQL Server]
+Description=Microsoft ODBC Driver 18 for SQL Server
+Driver=$PREFIX/lib/libmsodbcsql.18.dylib
+UsageCount=1
+EOF
+
+elif [[ ${target_platform} == linux-* ]]; then
+    # For Linux, extract the .deb package
+    mkdir -p tmp_extract
+    tar -xf data.tar.xz -C tmp_extract
+    
+    # Install the main library file
+    mkdir -p $PREFIX/lib
+    cp -p tmp_extract/opt/microsoft/msodbcsql18/lib64/libmsodbcsql-18.4.so.1.1 $PREFIX/lib/
+    
+    # Create symbolic link
+    ln -sf $PREFIX/lib/libmsodbcsql-18.4.so.1.1 $PREFIX/lib/libmsodbcsql-18.so
+    
+    # Install resource files
+    mkdir -p $PREFIX/share/msodbcsql18/resources/en_US
+    cp -p tmp_extract/opt/microsoft/msodbcsql18/share/resources/en_US/msodbcsqlr18.rll $PREFIX/share/msodbcsql18/resources/en_US/
+    
+    # Install header files
+    mkdir -p $PREFIX/include/msodbcsql18
+    cp -p tmp_extract/opt/microsoft/msodbcsql18/include/msodbcsql.h $PREFIX/include/msodbcsql18/
+    
+    # Install documentation
+    mkdir -p $PREFIX/share/doc/msodbcsql18
+    cp -p tmp_extract/usr/share/doc/msodbcsql18/LICENSE.txt $PREFIX/share/doc/msodbcsql18/
+    
+    # Create directory for configuration
+    mkdir -p $PREFIX/etc
+    
+    # Create odbcinst.ini template for use during activation
+    cat > $PREFIX/etc/odbcinst.ini.template << EOF
+[ODBC Driver 18 for SQL Server]
+Description=Microsoft ODBC Driver 18 for SQL Server
+Driver=$PREFIX/lib/libmsodbcsql-18.4.so.1.1
+UsageCount=1
+EOF
 fi
 
+# Copy license to standard location
+mkdir -p $PREFIX/share/licenses/$PKG_NAME
+cp $PREFIX/share/doc/msodbcsql18/LICENSE.txt $PREFIX/share/licenses/$PKG_NAME/
 
+# Create directories for activate/deactivate scripts
+mkdir -p $PREFIX/etc/conda/activate.d
+mkdir -p $PREFIX/etc/conda/deactivate.d
+
+# Copy scripts from recipe
+cp $RECIPE_DIR/activate.sh $PREFIX/etc/conda/activate.d/msodbcsql18.sh
+cp $RECIPE_DIR/deactivate.sh $PREFIX/etc/conda/deactivate.d/msodbcsql18.sh
+
+# Make scripts executable
+chmod +x $PREFIX/etc/conda/activate.d/msodbcsql18.sh
+chmod +x $PREFIX/etc/conda/deactivate.d/msodbcsql18.sh
+
+# Copy test script
+cp $RECIPE_DIR/test_msodbcsql18_unix.py $PREFIX/
