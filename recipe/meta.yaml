@@ -17,7 +17,7 @@ source:
   fn: msodbcsql.msi  # [win]
 
 build:
-  number: 11
+  number: 0
   script_env:
     - ACCEPT_EULA=Y
   ignore_run_exports:
@@ -42,18 +42,15 @@ requirements:
     - openssl >=3  # [linux or osx]
   run:
     - ca-certificates
-    # libkrb5-3 + on debian libgssapi-krb5-2
     - krb5  # [linux]
     - openssl >=3  # [linux or osx]
     - unixodbc >=2.3.1  # [linux or osx]
 
 test:
   files:
-    - test_msodbcsql18_unix.py  # [linux or osx]
-    - test_msodbcsql18_windows.py  # [linux or win]
-  requires:
-    - python
-    - unixodbc  # [osx or linux]
+    - tests/test_msodbcsql18_unix.py  # [linux or osx]
+    - tests/test_msodbcsql18_windows.py  # [win]
+  
   commands:
     # Check for file existence
     - test -f $PREFIX/lib/libmsodbcsql.18.dylib  # [osx]
@@ -70,9 +67,14 @@ test:
     - mkdir -p $PREFIX/etc  # [osx or linux]
     - IF NOT EXIST %PREFIX%\etc mkdir %PREFIX%\etc  # [win]
     
-    # Run Python tests with output
-    - python test_msodbcsql18_unix.py  # [linux or osx]
-    - python test_msodbcsql18_windows.py  # [win]
+    # Test activation scripts
+    - pytest -xvs tests/test_msodbcsql18_unix.py  # [linux or osx]
+    - pytest -xvs tests/test_msodbcsql18_windows.py  # [win]
+
+  requires:
+    - python
+    - pyodbc
+    - pytest
 
 about:
   home: https://docs.microsoft.com/en-us/sql/connect/odbc/microsoft-odbc-driver-for-sql-server

@@ -75,10 +75,6 @@ if errorlevel 1 exit 1
 copy "%RECIPE_DIR%\deactivate.bat" "%PREFIX%\etc\conda\deactivate.d\msodbcsql18.bat"
 if errorlevel 1 exit 1
 
-:: Copy test script
-copy "%RECIPE_DIR%\test_msodbcsql18_windows.py" "%PREFIX%\"
-if errorlevel 1 exit 1
-
 :: Clean up
 rmdir /s /q "%SRC_DIR%\msodbcsql_extract"
 if errorlevel 1 exit 1

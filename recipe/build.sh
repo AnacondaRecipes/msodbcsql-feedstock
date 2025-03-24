@@ -95,6 +95,3 @@ cp $RECIPE_DIR/deactivate.sh $PREFIX/etc/conda/deactivate.d/msodbcsql18.sh
 # Make scripts executable
 chmod +x $PREFIX/etc/conda/activate.d/msodbcsql18.sh
 chmod +x $PREFIX/etc/conda/deactivate.d/msodbcsql18.sh
-
-# Copy test script
-cp $RECIPE_DIR/test_msodbcsql18_unix.py $PREFIX/

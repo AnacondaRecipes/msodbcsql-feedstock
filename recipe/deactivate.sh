@@ -1,6 +1,4 @@
 #!/bin/bash
-# conda-helpers/etc/conda/deactivate.d/msodbcsql18.sh
-# Deactivation script for restoring ODBC environment variables
 
 # Restore ODBCSYSINI
 if [ -n "${_CONDA_BACKUP_ODBCSYSINI+x}" ]; then

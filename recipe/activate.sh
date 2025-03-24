@@ -1,8 +1,5 @@
 #!/bin/bash
-# conda-helpers/etc/conda/activate.d/msodbcsql18.sh
-# Activation script for setting ODBC environment variables
 
-# Save current variable values (if they exist)
 if [ -n "${ODBCSYSINI+x}" ]; then
     export _CONDA_BACKUP_ODBCSYSINI="$ODBCSYSINI"
 fi
