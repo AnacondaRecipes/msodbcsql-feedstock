@@ -37,7 +37,7 @@ copy "%SRC_DIR%\msodbcsql_extract\Windows\System32\msodbcsql18.dll" "%PREFIX%\Li
 if errorlevel 1 exit 1
 copy "%SRC_DIR%\msodbcsql_extract\Windows\System32\msodbcdiag18.dll" "%PREFIX%\Library\bin\"
 if errorlevel 1 exit 1
-copy "%SRC_DIR%\msodbcsql_extract\Windows\System32\adal.dll" "%PREFIX%\Library\bin\"
+copy "%SRC_DIR%\msodbcsql_extract\Windows\System32\mssql-auth.dll" "%PREFIX%\Library\bin\"
 if errorlevel 1 exit 1
 copy "%SRC_DIR%\msodbcsql_extract\Windows\System32\1033\msodbcsqlr18.rll" "%PREFIX%\Library\bin\"
 if errorlevel 1 exit 1

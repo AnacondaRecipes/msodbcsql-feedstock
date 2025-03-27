@@ -64,11 +64,10 @@ def test_additional_dll_files_exist():
     msodbcdiag_path = os.path.join(bin_dir, f'msodbcdiag{msodbcsql_major_version}.dll')
     print(f"Checking msodbcdiag{msodbcsql_major_version}.dll existence: {msodbcdiag_path}")
     assert os.path.exists(msodbcdiag_path), f"msodbcdiag{msodbcsql_major_version}.dll not found at path: {msodbcdiag_path}"
-    
-    # Check for adal.dll
-    adal_path = os.path.join(bin_dir, 'adal.dll')
-    print(f"Checking adal.dll existence: {adal_path}")
-    assert os.path.exists(adal_path), f"adal.dll not found at path: {adal_path}"
+
+    mssql_auth_path = os.path.join(bin_dir, 'mssql-auth.dll')
+    print(f"Checking mssql-auth.dll existence: {mssql_auth_path}")
+    assert os.path.exists(mssql_auth_path), f"mssql-auth.dll not found at path: {mssql_auth_path}"
     
     # Check for resource file
     resource_path = os.path.join(bin_dir, f'msodbcsqlr{msodbcsql_major_version}.rll')

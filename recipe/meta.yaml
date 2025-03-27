@@ -12,10 +12,8 @@ source:
     sha256: ca5ae21c3a3c749ca1cdf44b445a09a2e6ef119c3dd49b4c0ad435ddebe0c9ab  # [osx and arm64]
   url: https://packages.microsoft.com/debian/12/prod/pool/main/m/{{ name }}18/{{ name }}18_{{ version }}-1_arm64.deb  # [linux]
   sha256: b1a394d00e0629c862257b9b09507ca712cff7cc4d20f486d4e108bfec164255  # [linux]
-  #url: https://download.microsoft.com/download/26bc9eb1-ba24-4b62-8274-bff0f935bb75/amd64/1033/{{ name }}.msi  # [win]
-  url: https://go.microsoft.com/fwlink/?linkid=2280794  # [win]
-  sha256: b0fe5feb86975837c3297bf09e843c30241512aac4d10a4d40377c54039016bb  # [win]
-  fn: msodbcsql.msi  # [win]
+  url: https://download.microsoft.com/download/26bc9eb1-ba24-4b62-8274-bff0f935bb75/amd64/1033/{{ name }}.msi  # [win]
+  sha256: 0604d2505a4a656038c39d4447b8170dd1cef90bab2e3015c40c12a6996b09c2  # [win]
 
 build:
   number: 0
