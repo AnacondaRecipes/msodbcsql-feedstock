@@ -54,7 +54,11 @@ if errorlevel 1 exit 1
 copy "%SRC_DIR%\msodbcsql_extract\Program Files\Microsoft SQL Server\Client SDK\ODBC\180\License Terms\*" "%PREFIX%\Library\share\doc\msodbcsql18\"
 if errorlevel 1 exit 1
 
-:: Create odbcinst.ini template file for driver registration
+if not exist "%PREFIX%\etc" (
+    mkdir "%PREFIX%\etc"
+)
+
+:: Create odbcinst.ini file for driver registration
 echo Creating ODBC driver registration template...
 (
 echo [ODBC Driver 18 for SQL Server]
@@ -62,7 +66,12 @@ echo Description=Microsoft ODBC Driver 18 for SQL Server
 echo Driver=%PREFIX%\Library\bin\msodbcsql18.dll
 echo Threading=1
 echo UsageCount=1
-) > "%PREFIX%\etc\odbcinst.ini.template"
+) > "%PREFIX%\etc\odbcinst.ini"
+if errorlevel 1 exit 1
+
+:: Create empty odbc.ini
+echo [ODBC Data Sources] > "%PREFIX%\etc\odbc.ini"
+echo # Add your data sources here >> "%PREFIX%\etc\odbc.ini"
 if errorlevel 1 exit 1
 
 :: Create directories for activate/deactivate scripts

@@ -37,7 +37,7 @@ if [[ ${target_platform} == osx-* ]]; then
     mkdir -p $PREFIX/etc
     
     # Create odbcinst.ini template for use during activation
-    cat > $PREFIX/etc/odbcinst.ini.template << EOF
+    cat > $PREFIX/etc/odbcinst.ini << EOF
 [ODBC Driver 18 for SQL Server]
 Description=Microsoft ODBC Driver 18 for SQL Server
 Driver=$PREFIX/lib/libmsodbcsql.18.dylib
@@ -72,13 +72,19 @@ elif [[ ${target_platform} == linux-* ]]; then
     mkdir -p $PREFIX/etc
     
     # Create odbcinst.ini template for use during activation
-    cat > $PREFIX/etc/odbcinst.ini.template << EOF
+    cat > $PREFIX/etc/odbcinst.ini << EOF
 [ODBC Driver 18 for SQL Server]
 Description=Microsoft ODBC Driver 18 for SQL Server
 Driver=$PREFIX/lib/libmsodbcsql-18.4.so.1.1
 UsageCount=1
 EOF
 fi
+
+# Create odbc.ini template for use during activation
+cat > $PREFIX/etc/odbc.ini << EOF
+[ODBC Data Sources]
+# Add your data sources here
+EOF
 
 # Copy license to standard location
 mkdir -p $PREFIX/share/licenses/$PKG_NAME

@@ -16,26 +16,6 @@ set "ODBCINI=%CONDA_PREFIX%\etc\odbc.ini"
 :: Set variable for driver location
 set "MSODBCSQL18_DRIVER_PATH=%CONDA_PREFIX%\Library\bin\msodbcsql18.dll"
 
-:: Create configuration directory
-if not exist "%CONDA_PREFIX%\etc" (
-    mkdir "%CONDA_PREFIX%\etc"
-)
-
-:: Create odbcinst.ini if it doesn't exist
-if not exist "%CONDA_PREFIX%\etc\odbcinst.ini" (
-    echo [ODBC Driver 18 for SQL Server] > "%CONDA_PREFIX%\etc\odbcinst.ini"
-    echo Description=Microsoft ODBC Driver 18 for SQL Server >> "%CONDA_PREFIX%\etc\odbcinst.ini"
-    echo Driver=%MSODBCSQL18_DRIVER_PATH% >> "%CONDA_PREFIX%\etc\odbcinst.ini"
-    echo Threading=1 >> "%CONDA_PREFIX%\etc\odbcinst.ini"
-    echo UsageCount=1 >> "%CONDA_PREFIX%\etc\odbcinst.ini"
-)
-
-:: Create empty odbc.ini if it doesn't exist
-if not exist "%CONDA_PREFIX%\etc\odbc.ini" (
-    echo [ODBC Data Sources] > "%CONDA_PREFIX%\etc\odbc.ini"
-    echo # Add your data sources here >> "%CONDA_PREFIX%\etc\odbc.ini"
-)
-
 :: Backup registry state before modification
 set "REG_BACKUP_DIR=%CONDA_PREFIX%\etc\odbc_reg_backup"
 if not exist "%REG_BACKUP_DIR%" mkdir "%REG_BACKUP_DIR%"
