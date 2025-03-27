@@ -1,5 +1,6 @@
 @echo off
 
+:: Backup existing environment variables
 if defined ODBCSYSINI (
     set "_CONDA_BACKUP_ODBCSYSINI=%ODBCSYSINI%"
 )
@@ -35,8 +36,27 @@ if not exist "%CONDA_PREFIX%\etc\odbc.ini" (
     echo # Add your data sources here >> "%CONDA_PREFIX%\etc\odbc.ini"
 )
 
-:: Register in Windows registry - CRITICAL for pyodbc to find the driver
-:: Expand %CONDA_PREFIX% to the full path before adding to the registry
+:: Backup registry state before modification
+set "REG_BACKUP_DIR=%CONDA_PREFIX%\etc\odbc_reg_backup"
+if not exist "%REG_BACKUP_DIR%" mkdir "%REG_BACKUP_DIR%"
+
+:: Check if driver already exists in registry and back it up
+reg query "HKLM\SOFTWARE\ODBC\ODBCINST.INI\ODBC Drivers" /v "ODBC Driver 18 for SQL Server" >nul 2>&1
+if %ERRORLEVEL% EQU 0 (
+    echo Backing up existing registry entries...
+    reg export "HKLM\SOFTWARE\ODBC\ODBCINST.INI\ODBC Driver 18 for SQL Server" "%REG_BACKUP_DIR%\driver_entry.reg" /y >nul 2>&1
+    set "_CONDA_ODBC_DRIVER_EXISTED=1"
+) else (
+    set "_CONDA_ODBC_DRIVER_EXISTED=0"
+)
+
+:: Also check and backup the driver list entry
+reg query "HKLM\SOFTWARE\ODBC\ODBCINST.INI\ODBC Drivers" >nul 2>&1
+if %ERRORLEVEL% EQU 0 (
+    reg export "HKLM\SOFTWARE\ODBC\ODBCINST.INI\ODBC Drivers" "%REG_BACKUP_DIR%\drivers_list.reg" /y >nul 2>&1
+)
+
+:: Register in Windows registry
 set "FULL_PATH=%CONDA_PREFIX:\=\\%"
 set "FULL_DRIVER_PATH=%FULL_PATH%\Library\bin\msodbcsql18.dll"
 
@@ -49,7 +69,6 @@ set "FULL_DRIVER_PATH=%FULL_PATH%\Library\bin\msodbcsql18.dll"
 :: Temporary registration for the user	    HKCU	                No admin rights needed, but pyodbc won't see it
 :: pyodbc must detect the driver	        HKLM	                pyodbc looks there
 :: ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 reg add "HKLM\SOFTWARE\ODBC\ODBCINST.INI\ODBC Drivers" /v "ODBC Driver 18 for SQL Server" /t REG_SZ /d "Installed" /f >nul 2>&1
 if %ERRORLEVEL% EQU 0 (
     reg add "HKLM\SOFTWARE\ODBC\ODBCINST.INI\ODBC Driver 18 for SQL Server" /v Driver /t REG_SZ /d "%FULL_DRIVER_PATH%" /f >nul 2>&1

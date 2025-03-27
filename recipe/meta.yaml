@@ -1,4 +1,4 @@
-{% set name = "msodbcsql18" %}
+{% set name = "msodbcsql" %}
 {% set version = "18.4.1.1" %}
 
 package:
@@ -6,15 +6,15 @@ package:
   version: {{ version }}
 
 source:
-  - url: https://download.microsoft.com/download/f/0/e/f0e1f86e-1647-480f-b649-27741eea9642/msodbcsql18-18.4.1.1-amd64.tar.gz  # [osx and x86_64]
+  - url: https://download.microsoft.com/download/f/0/e/f0e1f86e-1647-480f-b649-27741eea9642/{{ name }}18-{{ version }}-amd64.tar.gz  # [osx and x86_64]
     sha256: 5af54cdb74827e6ffe78be8c35909febfce9f0e29773a492d054570327a74345  # [osx and x86_64]
-  - url: https://download.microsoft.com/download/f/0/e/f0e1f86e-1647-480f-b649-27741eea9642/msodbcsql18-18.4.1.1-arm64.tar.gz  # [osx and arm64]
+  - url: https://download.microsoft.com/download/f/0/e/f0e1f86e-1647-480f-b649-27741eea9642/{{ name }}18-{{ version }}-arm64.tar.gz  # [osx and arm64]
     sha256: ca5ae21c3a3c749ca1cdf44b445a09a2e6ef119c3dd49b4c0ad435ddebe0c9ab  # [osx and arm64]
-  url: https://packages.microsoft.com/debian/12/prod/pool/main/m/msodbcsql18/msodbcsql18_18.4.1.1-1_arm64.deb  # [linux]
+  url: https://packages.microsoft.com/debian/12/prod/pool/main/m/{{ name }}18/{{ name }}18_{{ version }}-1_arm64.deb  # [linux]
   sha256: b1a394d00e0629c862257b9b09507ca712cff7cc4d20f486d4e108bfec164255  # [linux]
-  url: https://go.microsoft.com/fwlink/?linkid=2280794  # [win]
+  url: https://download.microsoft.com/download/26bc9eb1-ba24-4b62-8274-bff0f935bb75/amd64/1033/{{ name }}.msi  # [win]
   sha256: b0fe5feb86975837c3297bf09e843c30241512aac4d10a4d40377c54039016bb  # [win]
-  fn: msodbcsql.msi  # [win]
+  fn: {{ name }}.msi  # [win]
 
 build:
   number: 0
@@ -46,12 +46,13 @@ requirements:
     - openssl >=3  # [linux or osx]
     - unixodbc >=2.3.1  # [linux or osx]
 
+# This test is only for local usage (needs docker container with pre-installed sql server) -> look in test_ms_odbc_connection
 {% set tests_to_skip = "test_ms_odbc_connection" %}
 
 test:
   files:
-    - tests/test_msodbcsql18_unix.py  # [linux or osx]
-    - tests/test_msodbcsql18_windows.py  # [win]
+    - tests/test_msodbcsql_unix.py  # [linux or osx]
+    - tests/test_msodbcsql_windows.py  # [win]
   commands:
     # Check for file existence
     - test -f $PREFIX/lib/libmsodbcsql.18.dylib  # [osx]
@@ -68,9 +69,13 @@ test:
     - mkdir -p $PREFIX/etc  # [osx or linux]
     - IF NOT EXIST %PREFIX%\etc mkdir %PREFIX%\etc  # [win]
     
+    # local only
+    #- pytest -xvs tests/test_msodbcsql_unix.py  # [linux or osx]
+    #- pytest -xvs tests/test_msodbcsql_windows.py  # [win]
+    
     # Test activation scripts
-    - pytest -xvs -k "not ({{ tests_to_skip }})" tests/test_msodbcsql18_unix.py  # [linux or osx]
-    - pytest -xvs -k "not ({{ tests_to_skip }})" tests/test_msodbcsql18_windows.py  # [win]
+    - pytest -xvs -k "not ({{ tests_to_skip }})" tests/test_msodbcsql_unix.py  # [linux or osx]
+    - pytest -xvs -k "not ({{ tests_to_skip }})" tests/test_msodbcsql_windows.py  # [win]
   requires:
     - python
     - pyodbc

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-# test_msodbcsql18_unix_pytest.py - pytest tests for msodbcsql18 on Linux/macOS
+# test_msodbcsql_unix_pytest.py - pytest tests for msodbcsql on Linux/macOS
 """
-Pytest tests for verifying correct installation and functionality of Microsoft ODBC Driver 18
+Pytest tests for verifying correct installation and functionality of Microsoft ODBC Driver
 """
 import os
 import sys
@@ -20,6 +20,13 @@ etc_dir = None
 odbcinst_ini = None
 odbc_ini = None
 
+#Update these values if the version changes:
+msodbcsql_major_version = '18'
+msodbcsql_minor_version = '4'
+macos_shared_lib = f'libmsodbcsql.{msodbcsql_major_version}.dylib'
+linux_shared_lib = f'libmsodbcsql-{msodbcsql_major_version}.{msodbcsql_minor_version}.so.1.1'
+
+
 # Setup function to initialize paths and environment
 @pytest.fixture(scope="session", autouse=True)
 def setup_environment():
@@ -36,9 +43,9 @@ def setup_environment():
         
     # Set platform-specific paths
     if platform.system() == 'Darwin':  # macOS
-        driver_path = os.path.join(conda_prefix, 'lib', 'libmsodbcsql.18.dylib')
+        driver_path = os.path.join(conda_prefix, 'lib', macos_shared_lib)
     else:  # Linux
-        driver_path = os.path.join(conda_prefix, 'lib', 'libmsodbcsql-18.4.so.1.1')
+        driver_path = os.path.join(conda_prefix, 'lib', linux_shared_lib)
         
     etc_dir = os.path.join(conda_prefix, 'etc')
     
@@ -73,14 +80,14 @@ def test_driver_registered_in_odbcinst_ini():
     with open(odbcinst_ini, 'r') as f:
         content = f.read()
     
-    assert "[ODBC Driver 18 for SQL Server]" in content, "Driver is not registered in odbcinst.ini"
+    assert f"[ODBC Driver {msodbcsql_major_version} for SQL Server]" in content, "Driver is not registered in odbcinst.ini"
     
     assert "Driver=" in content, "Missing 'Driver=' line in odbcinst.ini"
     
     if platform.system() == 'Darwin':
-        assert "libmsodbcsql.18.dylib" in content, "Incorrect driver path for macOS"
+        assert macos_shared_lib in content, "Incorrect driver path for macOS"
     else:  # Linux
-        assert "libmsodbcsql-18.4.so.1.1" in content, "Incorrect driver path for Linux"
+        assert linux_shared_lib in content, "Incorrect driver path for Linux"
 
 def test_environment_variables_set():
     print("Checking environment variables")
@@ -117,7 +124,7 @@ def test_connection_with_pyodbc(pyodbc_module):
     print(f"Available ODBC drivers: {drivers}")
     
     # Check if our driver is in the list
-    target_driver = "ODBC Driver 18 for SQL Server"
+    target_driver = f"ODBC Driver {msodbcsql_major_version} for SQL Server"
     
     if target_driver in drivers:
         print(f"Driver '{target_driver}' successfully registered with ODBC")
@@ -141,7 +148,7 @@ def test_odbcinst_command_works():
         # Even if we get an error, the command exists
         print("odbcinst command is available")
         
-        if "[ODBC Driver 18 for SQL Server]" in result.stdout:
+        if f"[ODBC Driver {msodbcsql_major_version} for SQL Server]" in result.stdout:
             print("Driver is registered with odbcinst")
         else:
             pytest.fail("Driver not found in odbcinst output, may need registration")
@@ -149,15 +156,14 @@ def test_odbcinst_command_works():
     except (FileNotFoundError, subprocess.SubprocessError) as e:
         pytest.fail(f"odbcinst command not available: {e}")
 
-# This test works only locally. We can`t use docker in the tests or setup for example SQL Server Express
-# To check connection to the sql server with ODBC Driver you must:
-# 1) docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=YourStrong@Passw0rd" -e "MSSQL_PID=Developer" -e "MSSQL_TCP_PORT=1433" -p 1433:1433 --name sql-server-container --memory 2g --cpus 2 -d mcr.microsoft.com/mssql/server:2022-latest
-# 2) run test if previous commands work well.
-# +++++++++++++++++++++++++++++++++++
-# 3) docker stop sql-server-container
-# 4) docker rm sql-server-container
-
 def test_ms_odbc_connection(pyodbc_module):
+    # This test works only locally. We can`t use docker in the tests or setup for example SQL Server Express
+    # To check connection to the sql server with ODBC Driver you must:
+    # 1) docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=YourStrong@Passw0rd" -e "MSSQL_PID=Developer" -e "MSSQL_TCP_PORT=1433" -p 1433:1433 --name sql-server-container --memory 2g --cpus 2 -d mcr.microsoft.com/mssql/server:2022-latest
+    # 2) run test if previous commands work well.
+    # +++++++++++++++++++++++++++++++++++
+    # 3) docker stop sql-server-container
+    # 4) docker rm sql-server-container
     """Test connecting to SQL Server via ODBC"""
     print("Testing connection to SQL Server using MS ODBC driver")
 
@@ -165,7 +171,7 @@ def test_ms_odbc_connection(pyodbc_module):
     database = 'master'
     username = 'sa'
     password = 'YourStrong@Passw0rd'
-    driver = 'ODBC Driver 18 for SQL Server'
+    driver = f'ODBC Driver {msodbcsql_major_version} for SQL Server'
     
     conn_str = f'DRIVER={{{driver}}};SERVER={server};DATABASE={database};UID={username};PWD={password};TrustServerCertificate=yes;'
 
