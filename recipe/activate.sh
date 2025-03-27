@@ -1,5 +1,10 @@
 #!/bin/bash
 
+MAJOR_VERSION=$(echo $PKG_VERSION | cut -d. -f1)
+MINOR_VERSION=$(echo $PKG_VERSION | cut -d. -f2)
+PATCH_VERSION=$(echo $PKG_VERSION | cut -d. -f3)
+SUBPATCH_VERSION=$(echo $PKG_VERSION | cut -d. -f4)
+
 if [ -n "${ODBCSYSINI+x}" ]; then
     export _CONDA_BACKUP_ODBCSYSINI="$ODBCSYSINI"
 fi
@@ -19,9 +24,9 @@ fi
 
 # Set variable for driver location
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    export MSODBCSQL18_DRIVER_PATH="$CONDA_PREFIX/lib/libmsodbcsql.18.dylib"
+    export MSODBCSQL${MAJOR_VERSION}_DRIVER_PATH="$CONDA_PREFIX/lib/libmsodbcsql.${MAJOR_VERSION}.dylib"
 elif [[ "$OSTYPE" == "linux"* ]]; then
-    export MSODBCSQL18_DRIVER_PATH="$CONDA_PREFIX/lib/libmsodbcsql-18.4.so.1.1"
+    export MSODBCSQL${MAJOR_VERSION}_DRIVER_PATH="$CONDA_PREFIX/lib/libmsodbcsql-${MAJOR_VERSION}.${MINOR_VERSION}.so.${PATCH_VERSION}.${SUBPATCH_VERSION}"
 fi
 
-echo "==> Environment variables for Microsoft ODBC Driver 18 configured"
+echo "==> Environment variables for Microsoft ODBC Driver ${MAJOR_VERSION} configured"

@@ -22,18 +22,11 @@ build:
   ignore_run_exports:
     - openssl  # [osx or linux]
     - unixodbc  # [osx]
-    - libgcc-ng  # [linux]
   missing_dso_whitelist:
     - /opt/homebrew/lib/*  # [osx]
-    - /usr/local/lib/libodbcinst*  # [osx]
     - /lib64/lib*  # [linux]
-    - $RPATH/libodbcinst.so.2  # [linux]
     - $RPATH/ld-linux-aarch64.so.1  # [linux]
-    - /lib64/ld-linux-aarch64.so.1  # [linux]
     - lib/libgcc_s.so.1  # [linux]
-    - $RPATH/api-ms-win-core-winrt-string-l1-1-0.dll  # [win]
-    - $RPATH/api-ms-win-core-winrt-error-l1-1-0.dll  # [win]
-    - $RPATH/api-ms-win-core-winrt-l1-1-0.dll  # [win]
 
 requirements:
   host:
