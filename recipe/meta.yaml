@@ -22,13 +22,17 @@ build:
   ignore_run_exports:
     - openssl  # [osx or linux]
     - unixodbc  # [osx]
-  #missing_dso_whitelist:
-  #  - /opt/homebrew/lib/*  # [osx]
-  #  - /usr/local/lib/libodbcinst.2.dylib  # [osx]
-  #  - $RPATH/ld-linux-aarch64.so.1  # [linux]
-  #  - /lib64/ld-linux-aarch64.so.1  # [linux]
-  #  - /lib64/lib*  # [linux]
-  #  - lib/libgcc_s.so.1  # [linux]
+  missing_dso_whitelist:
+    - /lib64/libdl.so.2  # [linux]
+    - /lib64/libkrb5.so.3  # [linux]
+    - /lib64/libgssapi_krb5.so.2  # [linux]
+    - /lib64/libstdc++.so.6  # [linux]
+    - /lib64/libm.so.6  # [linux]
+    - lib/libgcc_s.so.1  # [linux]
+    - /lib64/libpthread.so.0  # [linux]
+    - /lib64/libc.so.6  # [linux]
+    - $RPATH/ld-linux-aarch64.so.1  # [linux]
+    - /usr/local/lib/libodbcinst.2.dylib  # [osx]
 
 requirements:
   host:
