@@ -40,8 +40,11 @@ requirements:
     - openssl >=3  # [linux or osx]
     - unixodbc >=2.3.1  # [linux or osx]
 
-# This test is only for local usage (needs docker container with pre-installed sql server) -> look in test_ms_odbc_connection
+# This test is only for local usage (needs docker container with pre-installed sql server) -> look in test_ms_odbc_connection.
 {% set tests_to_skip = "test_ms_odbc_connection" %}
+# Needs manual ODBC driver registration. Look activation script.
+{% set tests_to_skip = tests_to_skip + " or test_windows_registry_entries" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_connection_with_pyodbc" %}  # [win]
 
 test:
   files:
@@ -62,10 +65,6 @@ test:
     # Create etc directory for testing if it doesn't exist
     - mkdir -p $PREFIX/etc  # [osx or linux]
     - IF NOT EXIST %PREFIX%\etc mkdir %PREFIX%\etc  # [win]
-    
-    # local only
-    #- pytest -xvs tests/test_msodbcsql_unix.py  # [linux or osx]
-    #- pytest -xvs tests/test_msodbcsql_windows.py  # [win]
 
     # Test activation scripts
     - pytest -xvs -k "not ({{ tests_to_skip }})" tests/test_msodbcsql_unix.py  # [linux or osx]
