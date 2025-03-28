@@ -1,0 +1,101 @@
+{% set name = "msodbcsql" %}
+{% set version = "18.4.1.1" %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ version }}
+
+source:
+  - url: https://download.microsoft.com/download/f/0/e/f0e1f86e-1647-480f-b649-27741eea9642/{{ name }}18-{{ version }}-amd64.tar.gz  # [osx and x86_64]
+    sha256: 5af54cdb74827e6ffe78be8c35909febfce9f0e29773a492d054570327a74345  # [osx and x86_64]
+  - url: https://download.microsoft.com/download/f/0/e/f0e1f86e-1647-480f-b649-27741eea9642/{{ name }}18-{{ version }}-arm64.tar.gz  # [osx and arm64]
+    sha256: ca5ae21c3a3c749ca1cdf44b445a09a2e6ef119c3dd49b4c0ad435ddebe0c9ab  # [osx and arm64]
+  url: https://packages.microsoft.com/debian/12/prod/pool/main/m/{{ name }}18/{{ name }}18_{{ version }}-1_arm64.deb  # [linux]
+  sha256: b1a394d00e0629c862257b9b09507ca712cff7cc4d20f486d4e108bfec164255  # [linux]
+  url: https://download.microsoft.com/download/26bc9eb1-ba24-4b62-8274-bff0f935bb75/amd64/1033/{{ name }}.msi  # [win]
+  sha256: 0604d2505a4a656038c39d4447b8170dd1cef90bab2e3015c40c12a6996b09c2  # [win]
+
+build:
+  number: 0
+  script_env:
+    - ACCEPT_EULA=Y
+  ignore_run_exports:
+    - openssl  # [osx or linux]
+    - unixodbc  # [osx]
+  missing_dso_whitelist:
+    - /lib64/libdl.so.2  # [linux]
+    - /lib64/libkrb5.so.3  # [linux]
+    - /lib64/libgssapi_krb5.so.2  # [linux]
+    - /lib64/libstdc++.so.6  # [linux]
+    - /lib64/libm.so.6  # [linux]
+    - lib/libgcc_s.so.1  # [linux]
+    - /lib64/libpthread.so.0  # [linux]
+    - /lib64/libc.so.6  # [linux]
+    - $RPATH/ld-linux-aarch64.so.1  # [linux]
+    - /lib64/ld-linux-aarch64.so.1  # [linux]
+    - /usr/local/lib/libodbcinst.2.dylib  # [osx]
+    - /opt/homebrew/lib/libodbcinst.2.dylib  # [osx]
+
+requirements:
+  host:
+    - unixodbc >=2.3.1  # [linux or osx]
+    - openssl >=3  # [linux or osx]
+  run:
+    - ca-certificates
+    - krb5  # [linux]
+    - openssl >=3  # [linux or osx]
+    - unixodbc >=2.3.1  # [linux or osx]
+
+# This test is only for local usage (needs docker container with pre-installed sql server) -> look in test_ms_odbc_connection.
+{% set tests_to_skip = "test_ms_odbc_connection" %}
+# Needs manual ODBC driver registration. Look activation script.
+{% set tests_to_skip = tests_to_skip + " or test_windows_registry_entries" %}  # [win]
+{% set tests_to_skip = tests_to_skip + " or test_connection_with_pyodbc" %}  # [win]
+
+test:
+  files:
+    - tests/test_msodbcsql_unix.py  # [linux or osx]
+    - tests/test_msodbcsql_windows.py  # [win]
+  commands:
+    # Check for file existence
+    - test -f $PREFIX/lib/libmsodbcsql.18.dylib  # [osx]
+    - test -f $PREFIX/lib/libmsodbcsql-18.4.so.1.1  # [linux]
+    - IF NOT EXIST %PREFIX%\Library\bin\msodbcsql18.dll EXIT /B 1  # [win]
+    
+    # Check for activation environment scripts
+    - test -f $PREFIX/etc/conda/activate.d/msodbcsql18.sh  # [osx or linux]
+    - test -f $PREFIX/etc/conda/deactivate.d/msodbcsql18.sh  # [osx or linux]
+    - IF NOT EXIST %PREFIX%\etc\conda\activate.d\msodbcsql18.bat EXIT /B 1  # [win]
+    - IF NOT EXIST %PREFIX%\etc\conda\deactivate.d\msodbcsql18.bat EXIT /B 1  # [win]
+    
+    # Create etc directory for testing if it doesn't exist
+    - mkdir -p $PREFIX/etc  # [osx or linux]
+    - IF NOT EXIST %PREFIX%\etc mkdir %PREFIX%\etc  # [win]
+
+    # Test activation scripts
+    - pytest -xvs -k "not ({{ tests_to_skip }})" tests/test_msodbcsql_unix.py  # [linux or osx]
+    - pytest -xvs -k "not ({{ tests_to_skip }})" tests/test_msodbcsql_windows.py  # [win]
+  requires:
+    - python
+    - pyodbc
+    - pytest
+
+about:
+  home: https://docs.microsoft.com/en-us/sql/connect/odbc/microsoft-odbc-driver-for-sql-server
+  license: Microsoft Software License Terms
+  license_family: Proprietary
+  license_file: LICENSE.txt
+  summary: Microsoft ODBC Driver 18 for SQL Server
+  description: |
+    Microsoft ODBC Driver for SQL Server provides native connectivity from macOS, Linux and Windows to
+    Microsoft SQL Server and Microsoft Azure SQL Database.
+  doc_url: https://docs.microsoft.com/en-us/sql/connect/odbc/microsoft-odbc-driver-for-sql-server
+  dev_url: https://docs.microsoft.com/en-us/sql/connect/odbc/microsoft-odbc-driver-for-sql-server
+
+extra:
+  skip-lints:
+    - incorrect_license
+    - host_section_needs_exact_pinnings
+
+recipe-maintainers:
+  - aosipov
