@@ -16,7 +16,7 @@ source:
   sha256: 0604d2505a4a656038c39d4447b8170dd1cef90bab2e3015c40c12a6996b09c2  # [win]
 
 build:
-  number: 0
+  number: 1
   script_env:
     - ACCEPT_EULA=Y
   ignore_run_exports:

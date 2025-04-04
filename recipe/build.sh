@@ -23,6 +23,7 @@ fi
 mkdir -p $PREFIX/etc
 mkdir -p $PREFIX/lib
 mkdir -p $PREFIX/share/msodbcsql${MAJOR_VERSION}/resources/en_US
+mkdir -p $PREFIX/share/resources/en_US
 mkdir -p $PREFIX/include/msodbcsql${MAJOR_VERSION}
 mkdir -p $PREFIX/share/doc/msodbcsql${MAJOR_VERSION}
 
@@ -31,6 +32,7 @@ if [[ ${target_platform} == osx-* ]]; then
     cp -p lib/libmsodbcsql.${MAJOR_VERSION}.dylib $PREFIX/lib/
     # Install resource files
     cp -p share/msodbcsql${MAJOR_VERSION}/resources/en_US/msodbcsqlr${MAJOR_VERSION}.rll $PREFIX/share/msodbcsql${MAJOR_VERSION}/resources/en_US/
+    cp -p share/msodbcsql${MAJOR_VERSION}/resources/en_US/msodbcsqlr${MAJOR_VERSION}.rll $PREFIX/share/resources/en_US/
     # Install header files
     cp -p include/msodbcsql${MAJOR_VERSION}/msodbcsql.h $PREFIX/include/msodbcsql${MAJOR_VERSION}/
     # Install documentation
@@ -55,6 +57,7 @@ elif [[ ${target_platform} == linux-* ]]; then
     ln -sf $PREFIX/lib/libmsodbcsql-${MAJOR_MINOR}.so.${PATCH_VERSION}.${SUBPATCH_VERSION} $PREFIX/lib/libmsodbcsql-${MAJOR_VERSION}.so
     # Install resource files
     cp -p tmp_extract/opt/microsoft/msodbcsql${MAJOR_VERSION}/share/resources/en_US/msodbcsqlr${MAJOR_VERSION}.rll $PREFIX/share/msodbcsql${MAJOR_VERSION}/resources/en_US/
+    cp -p tmp_extract/opt/microsoft/msodbcsql${MAJOR_VERSION}/share/resources/en_US/msodbcsqlr${MAJOR_VERSION}.rll $PREFIX/share/resources/en_US/
     # Install header files
     cp -p tmp_extract/opt/microsoft/msodbcsql${MAJOR_VERSION}/include/msodbcsql.h $PREFIX/include/msodbcsql${MAJOR_VERSION}/
     # Install documentation
