@@ -10,13 +10,15 @@ source:
     sha256: 5af54cdb74827e6ffe78be8c35909febfce9f0e29773a492d054570327a74345  # [osx and x86_64]
   - url: https://download.microsoft.com/download/f/0/e/f0e1f86e-1647-480f-b649-27741eea9642/{{ name }}18-{{ version }}-arm64.tar.gz  # [osx and arm64]
     sha256: ca5ae21c3a3c749ca1cdf44b445a09a2e6ef119c3dd49b4c0ad435ddebe0c9ab  # [osx and arm64]
-  url: https://packages.microsoft.com/debian/12/prod/pool/main/m/{{ name }}18/{{ name }}18_{{ version }}-1_arm64.deb  # [linux]
-  sha256: b1a394d00e0629c862257b9b09507ca712cff7cc4d20f486d4e108bfec164255  # [linux]
+  - url: https://packages.microsoft.com/debian/12/prod/pool/main/m/{{ name }}18/{{ name }}18_{{ version }}-1_arm64.deb  # [linux and aarch64]
+    sha256: b1a394d00e0629c862257b9b09507ca712cff7cc4d20f486d4e108bfec164255  # [linux and aarch64]
+  - url: https://packages.microsoft.com/debian/12/prod/pool/main/m/{{ name }}18/{{ name }}18_{{ version }}-1_amd64.deb   # [linux and x86_64]
+    sha256: 4d1036224ed11259bea297158c5e40884f6d24b274997cff5fe0ec53aafbd70c  # [linux and x86_64]
   url: https://download.microsoft.com/download/26bc9eb1-ba24-4b62-8274-bff0f935bb75/amd64/1033/{{ name }}.msi  # [win]
   sha256: 0604d2505a4a656038c39d4447b8170dd1cef90bab2e3015c40c12a6996b09c2  # [win]
 
 build:
-  number: 1
+  number: 2
   script_env:
     - ACCEPT_EULA=Y
   ignore_run_exports:
@@ -33,6 +35,7 @@ build:
     - /lib64/libc.so.6  # [linux]
     - $RPATH/ld-linux-aarch64.so.1  # [linux]
     - /lib64/ld-linux-aarch64.so.1  # [linux]
+    - /lib64/librt.so.1  # [linux]
     - /usr/local/lib/libodbcinst.2.dylib  # [osx]
     - /opt/homebrew/lib/libodbcinst.2.dylib  # [osx]
 
