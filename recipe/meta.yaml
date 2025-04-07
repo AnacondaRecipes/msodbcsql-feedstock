@@ -35,6 +35,7 @@ build:
     - /lib64/libc.so.6  # [linux]
     - $RPATH/ld-linux-aarch64.so.1  # [linux]
     - /lib64/ld-linux-aarch64.so.1  # [linux]
+    - /lib64/librt.so.1  # [linux]
     - /usr/local/lib/libodbcinst.2.dylib  # [osx]
     - /opt/homebrew/lib/libodbcinst.2.dylib  # [osx]
 
